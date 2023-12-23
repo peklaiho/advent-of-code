@@ -7,7 +7,7 @@ sub readFile {
     # Take first argument
     my $name = shift;
 
-    open(my $file, '<', $name);
+    open(my $file, '<', $name) or die "Unable to read file!";
     my @lines = <$file>;
     close $file;
 
@@ -42,6 +42,22 @@ sub arraySum {
     }
 
     return $sum;
+}
+
+sub replaceWordWithDigit {
+    my $result = shift;
+
+    $result =~ s/one/1/g;
+    $result =~ s/two/2/g;
+    $result =~ s/three/3/g;
+    $result =~ s/four/4/g;
+    $result =~ s/five/5/g;
+    $result =~ s/six/6/g;
+    $result =~ s/seven/7/g;
+    $result =~ s/eight/8/g;
+    $result =~ s/nine/9/g;
+
+    return $result;
 }
 
 # Apparently Perl files need to finish with truthy value
