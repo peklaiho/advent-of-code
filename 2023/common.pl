@@ -1,8 +1,11 @@
 use strict;
 use warnings;
 
-# Read all lines from a file and return
-# an array. Remove trailing newline.
+sub assert {
+    die "Assertion failed!" unless $_[0];
+}
+
+# Read all lines from a file and return an array.
 sub readFile {
     # Take first argument
     my $name = shift;
@@ -11,6 +14,7 @@ sub readFile {
     my @lines = <$file>;
     close $file;
 
+    # Remove trailing newline from lines
     return map { substr($_, 0, -1) } @lines;
 }
 
@@ -33,6 +37,44 @@ sub lastDigit {
     return firstDigit scalar reverse;
 }
 
+# Same as firstDigit but includes words like
+# 'one', 'two', and so on.
+sub firstDigitWords {
+    my $str = shift;
+
+    my %digits = (
+        '0' => 0,
+        '1' => 1,
+        '2' => 2,
+        '3' => 3,
+        '4' => 4,
+        '5' => 5,
+        '6' => 6,
+        '7' => 7,
+        '8' => 8,
+        '9' => 9,
+        'one' => 1,
+        'two' => 2,
+        'three' => 3,
+        'four' => 4,
+        'five' => 5,
+        'six' => 6,
+        'seven' => 7,
+        'eight' => 8,
+        'nine' => 9,
+    );
+
+    my @keys = keys %digits;
+    my @indexes = map { index($str, $_) } @keys;
+    my $key = arrayMinKeyPos(@indexes);
+
+    if ($key >= 0) {
+        return $digits{$key};
+    }
+
+    return;
+}
+
 # Calculate the sum of numbers in an array.
 sub arraySum {
     my $sum = 0;
@@ -44,20 +86,84 @@ sub arraySum {
     return $sum;
 }
 
-sub replaceWordWithDigit {
-    my $result = shift;
+# Print array
+sub arrayPrint {
+    foreach (@_) {
+        print "$_\n";
+    }
+}
 
-    $result =~ s/one/1/g;
-    $result =~ s/two/2/g;
-    $result =~ s/three/3/g;
-    $result =~ s/four/4/g;
-    $result =~ s/five/5/g;
-    $result =~ s/six/6/g;
-    $result =~ s/seven/7/g;
-    $result =~ s/eight/8/g;
-    $result =~ s/nine/9/g;
+# Max of array values
+sub arrayMax {
+    my $key = arrayMaxKey(@_);
 
-    return $result;
+    if ($key >= 0) {
+        return $_[$key];
+    }
+
+    return;
+}
+
+# Min of array values
+sub arrayMin {
+    my $key = arrayMinKey(@_);
+
+    if ($key >= 0) {
+        return $_[$key];
+    }
+
+    return;
+}
+
+# Return array key with largest value
+sub arrayMaxKey {
+    my $key = -1;
+    my $val;
+
+    for (my $i = 0; $i < @_; $i++) {
+        my $v = $_[$i];
+
+        if ($i == 0 || $v > $val) {
+            $key = $i;
+            $val = $v;
+        }
+    }
+
+    return $key;
+}
+
+# Return array key with smallest value
+sub arrayMinKey {
+    my $key = -1;
+    my $val;
+
+    for (my $i = 0; $i < @_; $i++) {
+        my $v = $_[$i];
+
+        if ($i == 0 || $v < $val) {
+            $key = $i;
+            $val = $v;
+        }
+    }
+
+    return $key;
+}
+
+# Same as arrayMinKey, but ignore < 0 values
+sub arrayMinKeyPos {
+    my $key = -1;
+    my $val;
+
+    for (my $i = 0; $i < @_; $i++) {
+        my $v = $_[$i];
+
+        if ($v >= 0 && ($key < 0 || $v < $val)) {
+            $key = $i;
+            $val = $v;
+        }
+    }
+
+    return $key;
 }
 
 # Apparently Perl files need to finish with truthy value

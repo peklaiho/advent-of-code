@@ -16,14 +16,9 @@ print "Part 1: $sum\n";
 # Part 2: replace 'one' with 1, and so on
 @data = readFile('day01-example2.txt');
 
-my @data2 = map { replaceWordWithDigit($_) } @data;
+@digits = map { firstDigitWords($_) } @data;
 
-@digits = map { firstDigit($_) . lastDigit($_) } @data2;
-
-
-foreach (@digits) {
-    print "$_\n";
-}
+arrayPrint(@digits);
 
 $sum = arraySum(@digits);
 print "Part 2: $sum\n";
