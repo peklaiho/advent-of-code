@@ -14,12 +14,8 @@ my $sum = arraySum(@digits);
 print "Part 1: $sum\n";
 
 # Part 2: replace 'one' with 1, and so on
-@data = readFile('day01-example2.txt');
+@digits = map { firstDigitWords($_) . lastDigitWords($_) } @data;
 
-@digits = map { firstDigitWords($_) } @data;
-
-arrayPrint(@digits);
-
+# Print the sum
 $sum = arraySum(@digits);
 print "Part 2: $sum\n";
-

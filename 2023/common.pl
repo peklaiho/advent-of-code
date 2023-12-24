@@ -64,11 +64,67 @@ sub firstDigitWords {
         'nine' => 9,
     );
 
+    # Get keys from %digits into an array
     my @keys = keys %digits;
-    my @indexes = map { index($str, $_) } @keys;
-    my $key = arrayMinKeyPos(@indexes);
 
-    if ($key >= 0) {
+    # Get first index of each key in $str
+    my @indexes = map { index($str, $_) } @keys;
+
+    # Find the smallest value as index of @keys
+    my $keyIndex = arrayMinKeyPos(@indexes);
+
+    if ($keyIndex >= 0) {
+        # Convert index of @keys into index of %digits
+        my $key = $keys[$keyIndex];
+
+        # Return the corresponding value from %digits
+        return $digits{$key};
+    }
+
+    return;
+}
+
+# Same as lastDigit but includes words like
+# 'one', 'two', and so on.
+sub lastDigitWords {
+    my $str = shift;
+
+    my %digits = (
+        '0' => 0,
+        '1' => 1,
+        '2' => 2,
+        '3' => 3,
+        '4' => 4,
+        '5' => 5,
+        '6' => 6,
+        '7' => 7,
+        '8' => 8,
+        '9' => 9,
+        'one' => 1,
+        'two' => 2,
+        'three' => 3,
+        'four' => 4,
+        'five' => 5,
+        'six' => 6,
+        'seven' => 7,
+        'eight' => 8,
+        'nine' => 9,
+    );
+
+    # Get keys from %digits into an array
+    my @keys = keys %digits;
+
+    # Get last index of each key in $str
+    my @indexes = map { rindex($str, $_) } @keys;
+
+    # Find the smallest value as index of @keys
+    my $keyIndex = arrayMaxKey(@indexes);
+
+    if ($keyIndex >= 0) {
+        # Convert index of @keys into index of %digits
+        my $key = $keys[$keyIndex];
+
+        # Return the corresponding value from %digits
         return $digits{$key};
     }
 
