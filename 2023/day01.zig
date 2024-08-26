@@ -1,6 +1,9 @@
 const std = @import("std");
 const common = @import("./common.zig");
 
+var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+const allocator = gpa.allocator();
+
 fn partOne(data: []const u8) !void {
     var lines = std.mem.splitScalar(u8, data, '\n');
 
@@ -42,7 +45,7 @@ fn partTwo(data: []const u8) !void {
 }
 
 pub fn main() !void {
-    const data = try common.readInputFile("day01-input.txt");
+    const data = try common.readInputFile("day01-input.txt", allocator);
 
     try partOne(data);
     try partTwo(data);

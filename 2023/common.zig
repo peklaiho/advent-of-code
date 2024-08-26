@@ -1,11 +1,7 @@
 const std = @import("std");
 
-// Do not worry about freeing memory for now
-var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-const allocator = gpa.allocator();
-
 /// Read file and allocate space for it.
-pub fn readInputFile(filename: []const u8) ![]u8 {
+pub fn readInputFile(filename: []const u8, allocator: std.mem.Allocator) ![]u8 {
     const file = try std.fs.cwd().openFile(filename, .{});
     defer file.close();
     const data = try file.readToEndAlloc(allocator, 1024 * 1024);
@@ -37,7 +33,7 @@ pub fn lastDigit(str: []const u8) !u8 {
     return error.DigitNotFound;
 }
 
-const digitWords: [9][]const u8 = .{
+const digitWords = [9][]const u8 {
     "one",
     "two",
     "three",
