@@ -8,6 +8,17 @@ pub fn readInputFile(filename: []const u8, allocator: std.mem.Allocator) ![]u8 {
     return data;
 }
 
+pub fn splitIntoLines(data: []const u8, allocator: std.mem.Allocator) ![][]const u8 {
+    var result = std.ArrayList([]const u8).init(allocator);
+    var lines = std.mem.splitScalar(u8, data, '\n');
+
+    while (lines.next()) |line| {
+        try result.append(line);
+    }
+
+    return result.items;
+}
+
 /// Read first digit ('0', '1', ...) from string and convert it to integer.
 pub fn firstDigit(str: []const u8) !u8 {
     for (str) |c| {
