@@ -16,7 +16,7 @@ NEWLINE equ 10
 section .text
 
 ;; Exported functions
-global exit, memcmp, memcpy, memset, itos, stoi, read_line, read_file
+global exit, prints, memcmp, memcpy, memset, itos, stoi, strcpy, strlen, read_line, read_file
 
 ;; Exit the program
 ;; Inputs: RDI = exit code
@@ -24,6 +24,18 @@ global exit, memcmp, memcpy, memset, itos, stoi, read_line, read_file
 exit:
     mov rax, SYS_EXIT
     syscall                     ; rdi is passed on unchanged
+    ret
+
+;; Print null-terminated string to stdout
+;; Inputs: RDI
+
+prints:
+    mov rsi, rdi                ; arg2: string (strlen does not modify rsi)
+    call strlen                 ; length into rax
+    mov rdi, STDOUT             ; arg1: stdout
+    mov rdx, rax                ; arg3: length
+    mov rax, SYS_WRITE          ; syscall id
+    syscall
     ret
 
 ;; Compare two memory locations
@@ -130,10 +142,35 @@ stoi:
 .finish2:
     ret
 
+;; Copy null-terminated string
+;; Inputs: RDI = destination, RSI = source
+
+strcpy:
+    cld
+.loop:
+    lodsb
+    stosb
+    test al, al
+    jnz .loop
+    ret
+
+;; Calculate length of null-terminated string
+;; Inputs: RDI
+
+strlen:
+    xor rax, rax
+    mov rcx, -1
+    cld
+    repne scasb                 ; loop until [rdi] != rax
+    mov rax, rcx
+    add rax, 2
+    neg rax
+    ret
+
 ;; Read line to buffer (until newline or null-terminator)
 ;; The newline character itself is not included
 ;; Inputs: RDI = destination, RSI = source
-;; Output: RAX = number of chars read (including newline)
+;; Output: RAX = number of bytes read
 
 read_line:
     cld
@@ -143,22 +180,21 @@ read_line:
     cmp al, 0
     je .finish                  ; finish if null-terminator
     cmp al, NEWLINE
-    je .finish_nl               ; finish if \n
+    je .finish                  ; finish if \n
     stosb                       ; write char
     inc rcx
     jmp .loop
-.finish_nl:
-    inc rcx                     ; include newline char in count
 .finish:
     mov byte [rdi], 0           ; null-terminator
     mov rax, rcx
     ret
 
 ;; Read file contents into memory
-;; Inputs: RDI = buffer, RSI = filename
+;; Inputs: RDI = buffer, RSI = filename, RDX = length
 ;; Output: RAX = number of bytes read
 
 read_file:
+    push rdx                    ; store len
     push rdi                    ; store buf
 
     ; open file
@@ -171,7 +207,7 @@ read_file:
     ; read file
     mov rdi, rax                ; arg1: file-pointer
     pop rsi                     ; arg2: buffer
-    mov rdx, 1048576            ; arg3: length, 1mb
+    pop rdx                     ; arg3: length
     mov rax, SYS_READ
     push rdi                    ; store file-pointer
     syscall

@@ -108,7 +108,7 @@ test_stoi:
 test_read_line:
     ; testcase 1
     call2 read_line, buf, lines
-    cmp rax, 4              ; check length
+    cmp rax, 3              ; check length
     jne .error
     mov al, [buf]
     cmp al, 'o'
