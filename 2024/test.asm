@@ -1,9 +1,10 @@
 %include "macro.asm"
 
-extern exit, memcmp, memcpy, memset, itos, stoi, read_line
+extern exit, memcmp, memcpy, memset, itos, stoi, read_two_ints, read_line
 
 section .data
     lines db `opq\nrst\n\0`
+    two_numbers db `123  456\n\0`
     num1 db "12345", 0
     num2 db "-98765", 0
     word1 db "abc", 0
@@ -22,6 +23,7 @@ _start:
     call test_memset
     call test_itos
     call test_stoi
+    call test_read_two_ints
     call test_read_line
     call1 exit, 0
 
@@ -105,6 +107,20 @@ test_stoi:
 .finish:
     ret
 
+test_read_two_ints:
+    call1 read_two_ints, two_numbers
+    mov edi, eax
+    cmp rdi, 123
+    jne .error
+    shr rax, 32
+    cmp rax, 456
+    jne .error
+    jmp .finish
+.error:
+    call1 exit, 6
+.finish:
+    ret
+
 test_read_line:
     ; testcase 1
     call2 read_line, buf, lines
@@ -131,6 +147,6 @@ test_read_line:
     jne .error
     jmp .finish
 .error:
-    call1 exit, 6
+    call1 exit, 7
 .finish:
     ret

@@ -16,7 +16,7 @@ NEWLINE equ 10
 section .text
 
 ;; Exported functions
-global exit, prints, memcmp, memcpy, memset, itos, stoi, strcpy, strlen, read_line, read_file
+global exit, prints, memcmp, memcpy, memset, itos, stoi, strcpy, strlen, read_two_ints, read_line, read_file
 
 ;; Exit the program
 ;; Inputs: RDI = exit code
@@ -107,7 +107,8 @@ itos:
     dec rcx
     test rcx, rcx
     jnz .loopPop                ; continue if we have more digits
-    mov byte [rdi], 0           ; null-terminator
+    xor rax, rax
+    stosb                       ; null-terminator
     ret
 
 ;; Convert string to integer
@@ -167,6 +168,34 @@ strlen:
     neg rax
     ret
 
+;; Skip over spaces
+;; Inputs: RDI
+;; Output: RDI
+
+skip_spaces:
+    mov al, [rdi]
+    cmp al, ' '
+    jne .finish
+    inc rdi
+    jmp skip_spaces
+.finish:
+    ret
+
+;; Read two 32-bit integers from a null-terminated string
+;; Skip over any space characters
+;; Inputs: RDI = string
+;; Output: RAX = 2 x 32bit numbers (bit-shifted)
+
+read_two_ints:
+    call skip_spaces
+    call stoi
+    mov r9, rax                 ; store first num in r9
+    call skip_spaces
+    call stoi
+    shl rax, 32                 ; shift left 32 bits
+    or rax, r9                  ; bitwise or
+    ret
+
 ;; Read line to buffer (until newline or null-terminator)
 ;; The newline character itself is not included
 ;; Inputs: RDI = destination, RSI = source
@@ -185,7 +214,8 @@ read_line:
     inc rcx
     jmp .loop
 .finish:
-    mov byte [rdi], 0           ; null-terminator
+    xor rax, rax
+    stosb                       ; null-terminator
     mov rax, rcx
     ret
 
