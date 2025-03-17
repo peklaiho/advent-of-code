@@ -1,8 +1,9 @@
 %include "macro.asm"
 
-extern exit, memcmp, memcpy, memset, itos, stoi, read_two_ints, read_line
+extern exit, memcmp, memcpy, memset, itos, stoi, sort, read_two_ints, read_line
 
 section .data
+    number_array dd 4, 3, 1, 6, 2, 5
     lines db `opq\nrst\n\0`
     two_numbers db `123  456\n\0`
     num1 db "12345", 0
@@ -23,6 +24,7 @@ _start:
     call test_memset
     call test_itos
     call test_stoi
+    call test_sort
     call test_read_two_ints
     call test_read_line
     call1 exit, 0
@@ -107,6 +109,27 @@ test_stoi:
 .finish:
     ret
 
+test_sort:
+    call2 sort, number_array, 6
+    mov rax, number_array
+    cmp dword [rax], 1
+    jne .error
+    cmp dword [rax + 4], 2
+    jne .error
+    cmp dword [rax + 8], 3
+    jne .error
+    cmp dword [rax + 12], 4
+    jne .error
+    cmp dword [rax + 16], 5
+    jne .error
+    cmp dword [rax + 20], 6
+    jne .error
+    jmp .finish
+.error:
+    call1 exit, 6
+.finish:
+    ret
+
 test_read_two_ints:
     call1 read_two_ints, two_numbers
     mov edi, eax
@@ -117,7 +140,7 @@ test_read_two_ints:
     jne .error
     jmp .finish
 .error:
-    call1 exit, 6
+    call1 exit, 7
 .finish:
     ret
 
@@ -147,6 +170,6 @@ test_read_line:
     jne .error
     jmp .finish
 .error:
-    call1 exit, 7
+    call1 exit, 8
 .finish:
     ret

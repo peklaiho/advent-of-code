@@ -16,7 +16,7 @@ NEWLINE equ 10
 section .text
 
 ;; Exported functions
-global exit, prints, memcmp, memcpy, memset, itos, stoi, strcpy, strlen, read_two_ints, read_line, read_file
+global exit, prints, memcmp, memcpy, memset, itos, stoi, sort, strcpy, strlen, read_two_ints, read_line, read_file
 
 ;; Exit the program
 ;; Inputs: RDI = exit code
@@ -141,6 +141,60 @@ stoi:
     jz .finish2
     neg rax                     ; make negative
 .finish2:
+    ret
+
+;; Sort an array of 32-bit integers using BubbleSort
+;; Inputs: RDI = array, RSI = length
+;;
+;; Pseudocode from Wikipedia:
+;;
+;; procedure bubbleSort(A : list of sortable items)
+;;   n := length(A)
+;;   repeat
+;;     newn := 0
+;;     for i := 1 to n - 1 inclusive do
+;;       if A[i - 1] > A[i] then
+;;         swap(A[i - 1], A[i])
+;;         newn := i
+;;       end if
+;;     end for
+;;     n := newn
+;;   until n ≤ 1
+;; end procedure
+
+sort:
+
+.outer_loop:
+    cmp rsi, 1
+    jle .finish                 ; finish if rsi <= 1
+
+    mov rcx, 1                  ; rcx = inner loop counter
+    mov rdx, 0                  ; rdx = new length
+
+.inner_loop:
+    lea rax, [rdi + rcx*4]      ; address to rax
+    mov dword r8d, [rax - 4]    ; first number to r8
+    mov dword r9d, [rax]        ; second number to r9
+
+    cmp r8d, r9d
+    jle .no_swap
+
+    ; swap
+    mov dword [rax - 4], r9d
+    mov dword [rax], r8d
+
+    mov rdx, rcx                ; new length = rcx
+
+.no_swap:
+    inc rcx                     ; inc inner loop counter
+
+    cmp rcx, rsi
+    jl .inner_loop              ; continue inner loop
+
+    mov rsi, rdx                ; length = new length
+    jmp .outer_loop             ; continue outer loop
+
+.finish:
     ret
 
 ;; Copy null-terminated string
