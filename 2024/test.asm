@@ -1,6 +1,6 @@
 %include "macro.asm"
 
-extern exit, memcmp, memcpy, memset, itos, stoi, sort, read_two_ints, read_line
+extern exit, memcmp, memcpy, memset, itos, stoi, bubble_sort, read_two_ints, read_line
 
 section .data
     number_array dd 4, 3, 1, 6, 2, 5
@@ -24,7 +24,7 @@ _start:
     call test_memset
     call test_itos
     call test_stoi
-    call test_sort
+    call test_bubble_sort
     call test_read_two_ints
     call test_read_line
     call1 exit, 0
@@ -109,8 +109,8 @@ test_stoi:
 .finish:
     ret
 
-test_sort:
-    call2 sort, number_array, 6
+test_bubble_sort:
+    call2 bubble_sort, number_array, 6
     mov rax, number_array
     cmp dword [rax], 1
     jne .error

@@ -16,7 +16,7 @@ NEWLINE equ 10
 section .text
 
 ;; Exported functions
-global exit, prints, memcmp, memcpy, memset, itos, stoi, sort, strcpy, strlen, read_two_ints, read_line, read_file
+global exit, prints, memcmp, memcpy, memset, itos, stoi, bubble_sort, strcpy, strlen, read_two_ints, read_line, read_file
 
 ;; Exit the program
 ;; Inputs: RDI = exit code
@@ -162,7 +162,7 @@ stoi:
 ;;   until n ≤ 1
 ;; end procedure
 
-sort:
+bubble_sort:
 
 .outer_loop:
     cmp rsi, 1
