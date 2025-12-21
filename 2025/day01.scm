@@ -6,13 +6,11 @@
 
 (define apply-left
   (lambda (val1 val2)
-    (let ([res (- val1 val2)])
-      (if (< res 0) (+ res 100) res))))
+    (modulo (+ (modulo (- val1 val2) 100) 100) 100)))
 
 (define apply-right
   (lambda (val1 val2)
-    (let ([res (+ val1 val2)])
-      (if (> res 99) (- res 100) res))))
+    (modulo (+ val1 val2) 100)))
 
 (define apply-rotation
   (lambda (initial-value rotation)
@@ -21,13 +19,21 @@
           (apply-left initial-value val)
           (apply-right initial-value val)))))
 
-(let ([lines (read-file-lines "day01-sample.txt")])
-  (map write-line (map split-after-first-char lines)))
+(define rotation-to-string
+  (lambda (rotation)
+    (string-append "(" (car rotation) " " (number->string (cadr rotation)) ")")))
 
-(write-line (apply-rotation 98 '("R" 1)))
-(write-line (apply-rotation 99 '("R" 1)))
-(write-line (apply-rotation 99 '("R" 2)))
-(write-line (apply-rotation 2 '("L" 1)))
-(write-line (apply-rotation 1 '("L" 1)))
-(write-line (apply-rotation 0 '("L" 1)))
-(write-line (apply-rotation 0 '("L" 2)))
+(define count-zeroes
+  (lambda (sequence value zeroes)
+    (cond
+     [(null? sequence) zeroes]
+     [else (let* ([result (apply-rotation value (car sequence))]
+                  [new-zeroes (if (= result 0) (+ zeroes 1) zeroes)])
+             ;; (write-line (string-append "After rotation " (rotation-to-string (car sequence))
+             ;;                            " value is " (number->string result)
+             ;;                            " and we have " (number->string new-zeroes) " zeroes."))
+             (count-zeroes (cdr sequence) result new-zeroes))])))
+
+(let* ([sequence (map split-after-first-char (read-file-lines "day01-input.txt"))]
+       [zeroes (count-zeroes sequence 50 0)])
+  (write-line (string-append "Total number of zeroes: " (number->string zeroes))))
