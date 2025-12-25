@@ -1,4 +1,5 @@
 (use-modules (ice-9 rdelim))
+(use-modules (srfi srfi-1))
 
 (define read-lines-from-port
   (lambda (port ls)
