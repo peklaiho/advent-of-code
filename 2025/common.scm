@@ -13,3 +13,10 @@
     (call-with-input-file filename
       (lambda (port)
         (reverse (read-lines-from-port port '()))))))
+
+(define number-list-to-number
+  (lambda (lst)
+    (string->number
+     (list->string
+      (map (lambda (num)
+             (integer->char (+ num (char->integer #\0)))) lst)))))
