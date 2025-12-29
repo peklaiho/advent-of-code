@@ -1,3 +1,4 @@
+(use-modules (ice-9 control))
 (use-modules (ice-9 rdelim))
 (use-modules (srfi srfi-1))
 
