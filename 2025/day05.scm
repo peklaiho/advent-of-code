@@ -1,5 +1,9 @@
 (load "./common.scm")
 
+;; ------
+;; Part 1
+;; ------
+
 (define in-range?
   (lambda (id range)
     (and (>= id (car range)) (<= id (cdr range)))))
@@ -39,8 +43,45 @@
                 (parse-input (cdr input) (cons (parse-range row dash) ranges) ids)
                 (parse-input (cdr input) ranges (cons (string->number row) ids)))))])))
 
+;; ------
+;; Part 2
+;; ------
+
+(define sort-ranges
+  (lambda (ranges)
+    (sort ranges (lambda (r1 r2)
+                   (< (car r1) (car r2))))))
+
+(define merge-ranges
+  (lambda (ranges result)
+    (cond
+     [(null? ranges) (reverse result)]
+     [(null? result) (merge-ranges (cdr ranges) (cons (car ranges) result))]
+     [else
+      (let* ([current (car ranges)]
+             [last (car result)])
+        (if (<= (car current) (cdr last))
+            (merge-ranges (cdr ranges) (cons (cons (min (car current) (car last))
+                                                   (max (cdr current) (cdr last)))
+                                             (cdr result)))
+            (merge-ranges (cdr ranges) (cons current result))))])))
+
+(define count-numbers-in-ranges
+  (lambda (ranges)
+    (reduce + 0 (map (lambda (range)
+                       (+ 1 (- (cdr range) (car range)))) ranges))))
+
+(define part-two
+  (lambda (ranges)
+    (count-numbers-in-ranges (merge-ranges (sort-ranges ranges) '()))))
+
+;; ------
+;; Common
+;; ------
+
 (let* ([raw-input (read-file-lines "day05-input.txt")]
        [parsed-input (parse-input raw-input '() '())]
        [ranges (car parsed-input)]
        [ids (cadr parsed-input)])
-  (simple-format #t "Fresh items (part 1): ~A\n" (count-fresh ranges ids)))
+  (simple-format #t "Fresh items (part 1): ~A\n" (count-fresh ranges ids))
+  (simple-format #t "Unique numbers (part 2): ~A\n" (part-two ranges)))
